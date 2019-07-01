@@ -1,0 +1,10 @@
+H:\Project_C\CrawlerData\CrawlerData\obj\Debug\CrawlerData.Form1.resources
+H:\Project_C\CrawlerData\CrawlerData\obj\Debug\CrawlerData.Properties.Resources.resources
+H:\Project_C\CrawlerData\CrawlerData\obj\Debug\CrawlerData.csproj.GenerateResource.cache
+H:\Project_C\CrawlerData\CrawlerData\obj\Debug\CrawlerData.csproj.CoreCompileInputs.cache
+H:\Project_C\CrawlerData\CrawlerData\bin\Debug\CrawlerData.exe.config
+H:\Project_C\CrawlerData\CrawlerData\bin\Debug\CrawlerData.exe
+H:\Project_C\CrawlerData\CrawlerData\bin\Debug\CrawlerData.pdb
+H:\Project_C\CrawlerData\CrawlerData\obj\Debug\CrawlerData.exe
+H:\Project_C\CrawlerData\CrawlerData\obj\Debug\CrawlerData.pdb
+H:\Project_C\CrawlerData\CrawlerData\obj\Debug\CrawlerData.csprojAssemblyReference.cache

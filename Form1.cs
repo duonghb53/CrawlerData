@@ -14,18 +14,20 @@ namespace CrawlerData
 {
     public partial class Form1 : Form
     {
-        //private const string WEB_URL = @"https://vnexpress.net/suc-khoe/dau-lung-nen-nam-nem-cung-hay-mem-3944694.html";
-        //private const string WEB_URL = @"https://dantri.com.vn/suc-khoe/nguoi-nha-benh-nhan-say-xin-dam-vao-mat-nu-bac-si-20190627112323245.htm";
-        private const string WEB_URL = @"https://vnexpress.net/suc-khoe/be-trai-2-tuoi-bi-suy-dinh-duong-vi-tac-ta-trang-3945669.html";
         private const string PATTERN_DANTRI = @"<p>(?<title>[^<]*)<\/[pP]>";
         private const string PATTERN_VNEX = @"<section class=""sidebar_1"">(.*?)</section>";
-        private const string PATTERN_WHO = @"<div id =\""content\"">(.*?)</div>";
+        private const string PATTERN_WHO = @"<div id =""content"">(.*?)</div>";
+        private const string PATTERN_MOH = @"<div id =""contentDetail"">(.*?)</div>";
         
-        //private const string PATTERN_LINK = @"<a href=\"".*\"">(?<name>.*)</a>";
-        private const string PATTERN_LINK = @"https://vnexpress.net/suc-khoe/(.*?).html";
-        //private const string PATTERN_LINK_WHO = @"http://www.wpro.who.int/(.*?)/vi/index.html";
+        private const string PATTERN_LINK_EX = @"https://vnexpress.net/suc-khoe/(.*?).html";
+        private const string PATTERN_LINK_DT = @"https://vnexpress.net/suc-khoe/(.*?).html";
         private const string PRE_LINK_WHO = @"http://www.wpro.who.int";
         private const string PATTERN_LINK_WHO = "<a href=\"(?<name>.*)/vi/index.html\">";
+        private const string PATTERN_LINK_WHO_VI = "<a href=\"(?<name>.*)/vi\">";
+        private const string PATTERN_LINK_MOH = "<a href=\"https://www.moh.gov.vn/(.*?)\">";
+
+
+
         private const string path = @"Link_cao.txt";
         private const string Outfile = @"Yte_SKhoe";
 
@@ -33,6 +35,10 @@ namespace CrawlerData
         public Form1()
         {
             InitializeComponent();
+            comboBox1.Items.Add("WHO");
+            comboBox1.Items.Add("MOH");
+            comboBox1.Items.Add("VNEX");
+            comboBox1.Items.Add("DANTRI");
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -53,7 +59,27 @@ namespace CrawlerData
                         string data = String.Empty;
 
                         data = ReadTextFromUrl(lnk);
-                        result = GetContentNews(data, PATTERN_WHO);
+                        int case_web = comboBox1.SelectedIndex;
+                        string pattern;
+                        switch(case_web)
+                        {
+                            case 0:
+                                pattern = PATTERN_WHO;
+                                break;
+                            case 1:
+                                pattern = PATTERN_MOH;
+                                break;
+                            case 2:
+                                pattern = PATTERN_VNEX;
+                                break;
+                            case 3:
+                                pattern = PATTERN_DANTRI;
+                                break;
+                            default:
+                                return;
+                        }
+
+                        result = GetContentNews(data, pattern);
                         result = GetPlainTextFromHtml(result);
                         sw.WriteLine(result);
                         textBox1.Text = result;
@@ -72,36 +98,52 @@ namespace CrawlerData
         }
         private void button2_Click(object sender, EventArgs e)
         {
+            if (textBox2.Text.Length == 0)
+            {
+                MessageBox.Show("Nhap link web");
+                return;
+            }
             try
             {
                 textBox1.Text = String.Empty;
                 string[] lines = File.ReadAllLines(textBox2.Text);
                 string[] links = lines.Distinct().ToArray();
                 StreamWriter sw = File.AppendText(path);
-                int dem = 0;
-
+                List<string> totalLink = new List<string>();
                 foreach (string lnk in links)
                 {
                     List<string> result = new List<string>();
                     string data = String.Empty;
-                    if (textBox2.Text.Length == 0)
-                    {
-                        MessageBox.Show("Nhap link web");
-                        return;
-                    }
+                    
                     data = ReadTextFromUrl(lnk);
-                    result = GetLink(data, PATTERN_LINK_WHO);
-                    // This text is added only once to the file.
-
-                    List<string> distinct = result.Distinct().ToList();
-
-                    foreach (string link in distinct)
+                    int case_web = comboBox1.SelectedIndex;
+                    string pattern;
+                    switch (case_web)
                     {
-                        sw.WriteLine(link);
-                        dem++;
+                        case 0:
+                            pattern = PATTERN_LINK_WHO;
+                            break;
+                        case 1:
+                            pattern = PATTERN_LINK_MOH;
+                            break;
+                        case 2:
+                            pattern = PATTERN_LINK_EX;
+                            break;
+                        case 3:
+                            pattern = PATTERN_LINK_DT;
+                            break;
+                        default:
+                            return;
                     }
+                    result = GetLink(data, pattern);
+                    totalLink.AddRange(result);
                 }
-                MessageBox.Show("Lay duoc " + dem.ToString() + " links");
+                List<string> distinct = totalLink.Distinct().ToList();
+                foreach (string link in distinct)
+                {
+                    sw.WriteLine(link);
+                }
+                MessageBox.Show("Lay duoc " + distinct.Count.ToString() + " links");
 
                 sw.Close();
             }
@@ -175,8 +217,7 @@ namespace CrawlerData
                         if (match.Success)
                         {
                             string link = match.Value.ToString().Replace("<a href=\"", string.Empty);
-                            link = link.Replace("\">", string.Empty);
-                            
+                            link = link.Replace("\">", string.Empty);                           
                             result.Add(PRE_LINK_WHO + link);
                         }
                     }

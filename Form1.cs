@@ -18,11 +18,16 @@ namespace CrawlerData
         //private const string WEB_URL = @"https://dantri.com.vn/suc-khoe/nguoi-nha-benh-nhan-say-xin-dam-vao-mat-nu-bac-si-20190627112323245.htm";
         private const string WEB_URL = @"https://vnexpress.net/suc-khoe/be-trai-2-tuoi-bi-suy-dinh-duong-vi-tac-ta-trang-3945669.html";
         private const string PATTERN_DANTRI = @"<p>(?<title>[^<]*)<\/[pP]>";
-        private const string PATTERN_VNEX = @"<section class=""sidebar_1"">(.*)</section>";
+        private const string PATTERN_VNEX = @"<section class=""sidebar_1"">(.*?)</section>";
+        private const string PATTERN_WHO = @"<div id =\""content\"">(.*?)</div>";
+        
         //private const string PATTERN_LINK = @"<a href=\"".*\"">(?<name>.*)</a>";
         private const string PATTERN_LINK = @"https://vnexpress.net/suc-khoe/(.*?).html";
+        //private const string PATTERN_LINK_WHO = @"http://www.wpro.who.int/(.*?)/vi/index.html";
+        private const string PRE_LINK_WHO = @"http://www.wpro.who.int";
+        private const string PATTERN_LINK_WHO = "<a href=\"(?<name>.*)/vi/index.html\">";
         private const string path = @"Link_cao.txt";
-        private const string Outfile = @"content";
+        private const string Outfile = @"Yte_SKhoe";
 
 
         public Form1()
@@ -39,18 +44,24 @@ namespace CrawlerData
             {
                 string[] lines = File.ReadAllLines(path);
                 string[] links = lines.Distinct().ToArray();
-                StreamWriter sw = File.CreateText(Outfile + DateTime.Now.ToString("_yyyyMMddHHmmss") + ".txt");
-                foreach (string lnk in links)
-                {
-                    string result = String.Empty;
-                    string data = String.Empty;
+                string fileName = Outfile + DateTime.Now.ToString("_yyyyMMddHHmmss") + ".txt";
+                using (StreamWriter sw = new StreamWriter(fileName))
+                { 
+                    foreach (string lnk in links)
+                    {
+                        string result = String.Empty;
+                        string data = String.Empty;
 
-                    data = ReadTextFromUrl(lnk);
-                    result = GetContentNews(data, PATTERN_VNEX);
-                    result = GetPlainTextFromHtml(result);
-                    sw.WriteLine(result);
-                    sw.WriteLine(Environment.NewLine);
+                        data = ReadTextFromUrl(lnk);
+                        result = GetContentNews(data, PATTERN_WHO);
+                        result = GetPlainTextFromHtml(result);
+                        sw.WriteLine(result);
+                        textBox1.Text = result;
+                    }
+                    sw.Close();
                 }
+                MessageBox.Show("Lay duoc " + links.Length.ToString() + " bai");
+
             }
             catch (Exception ex)
             {
@@ -58,8 +69,6 @@ namespace CrawlerData
                 return;
             }
 
-
-            //textBox1.Text = result;
         }
         private void button2_Click(object sender, EventArgs e)
         {
@@ -81,7 +90,7 @@ namespace CrawlerData
                         return;
                     }
                     data = ReadTextFromUrl(lnk);
-                    result = GetLink(data, PATTERN_LINK);
+                    result = GetLink(data, PATTERN_LINK_WHO);
                     // This text is added only once to the file.
 
                     List<string> distinct = result.Distinct().ToList();
@@ -130,7 +139,7 @@ namespace CrawlerData
             string result = String.Empty;
             try
             {
-                Regex regex = new Regex(pattern, RegexOptions.IgnoreCase|RegexOptions.Singleline);
+                Regex regex = new Regex(pattern, RegexOptions.Singleline | RegexOptions.IgnoreCase);
                 MatchCollection matches = regex.Matches(data);
                 if (matches.Count > 0)
                 {
@@ -165,7 +174,10 @@ namespace CrawlerData
                     {
                         if (match.Success)
                         {
-                            result.Add(match.Value.ToString());
+                            string link = match.Value.ToString().Replace("<a href=\"", string.Empty);
+                            link = link.Replace("\">", string.Empty);
+                            
+                            result.Add(PRE_LINK_WHO + link);
                         }
                     }
                 }
@@ -189,6 +201,9 @@ namespace CrawlerData
                 htmlString = Regex.Replace(htmlString, htmlTagPattern, string.Empty);
                 htmlString = Regex.Replace(htmlString, @"^\s+$[\r\n]*", "", RegexOptions.Multiline);
                 htmlString = htmlString.Replace("&nbsp;", string.Empty);
+                htmlString = htmlString.Replace("\n", " ");
+                htmlString = htmlString.Replace("\t", string.Empty);
+                htmlString = htmlString.Replace("  ", string.Empty);
             }
             catch (Exception ex)
             {

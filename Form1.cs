@@ -43,12 +43,11 @@ namespace CrawlerData
 
         private void button1_Click(object sender, EventArgs e)
         {
-
-
             textBox1.Text = String.Empty;
             try
             {
-                string[] lines = File.ReadAllLines(path);
+                int countNews = 0;
+                string[] lines = File.ReadAllLines(textBox2.Text);
                 string[] links = lines.Distinct().ToArray();
                 string fileName = Outfile + DateTime.Now.ToString("_yyyyMMddHHmmss") + ".txt";
                 using (StreamWriter sw = new StreamWriter(fileName))
@@ -81,12 +80,14 @@ namespace CrawlerData
 
                         result = GetContentNews(data, pattern);
                         result = GetPlainTextFromHtml(result);
+                        if (result.Length == 0) continue;
                         sw.WriteLine(result);
-                        textBox1.Text = result;
+                        countNews++;
+                        textBox1.AppendText(lnk + Environment.NewLine);
                     }
                     sw.Close();
                 }
-                MessageBox.Show("Lay duoc " + links.Length.ToString() + " bai");
+                MessageBox.Show("Lay duoc " + countNews + " bai");
 
             }
             catch (Exception ex)
@@ -108,7 +109,7 @@ namespace CrawlerData
                 textBox1.Text = String.Empty;
                 string[] lines = File.ReadAllLines(textBox2.Text);
                 string[] links = lines.Distinct().ToArray();
-                StreamWriter sw = File.AppendText(path);
+                StreamWriter sw = new StreamWriter(path);
                 List<string> totalLink = new List<string>();
                 foreach (string lnk in links)
                 {
@@ -142,6 +143,7 @@ namespace CrawlerData
                 foreach (string link in distinct)
                 {
                     sw.WriteLine(link);
+                    sw.Flush();
                 }
                 MessageBox.Show("Lay duoc " + distinct.Count.ToString() + " links");
 
@@ -189,7 +191,7 @@ namespace CrawlerData
                     {
                         if (match.Success)
                         {
-                            result += match.Value.ToString() + Environment.NewLine;
+                            result += match.Value.ToString();
                         }
                     }
                 }
@@ -216,9 +218,17 @@ namespace CrawlerData
                     {
                         if (match.Success)
                         {
-                            string link = match.Value.ToString().Replace("<a href=\"", string.Empty);
-                            link = link.Replace("\">", string.Empty);                           
-                            result.Add(PRE_LINK_WHO + link);
+                           
+                            if(comboBox1.SelectedIndex == 0 )
+                            {
+                                string link = match.Value.ToString().Replace("<a href=\"", string.Empty);
+                                link = link.Replace("\">", string.Empty);
+                                result.Add(PRE_LINK_WHO + link);
+                            }
+                            else
+                            {
+                                result.Add(match.Value.ToString());
+                            }
                         }
                     }
                 }
@@ -235,7 +245,7 @@ namespace CrawlerData
         {
             try
             {
-                string htmlTagPattern = "<.*?>";
+                string htmlTagPattern = "<(.*?)>";
                 var regexCss = new Regex("(\\<script(.+?)\\</script\\>)|(\\<style(.+?)\\</style\\>)",
                     RegexOptions.Singleline | RegexOptions.IgnoreCase);
                 htmlString = regexCss.Replace(htmlString, string.Empty);
@@ -244,7 +254,7 @@ namespace CrawlerData
                 htmlString = htmlString.Replace("&nbsp;", string.Empty);
                 htmlString = htmlString.Replace("\n", " ");
                 htmlString = htmlString.Replace("\t", string.Empty);
-                htmlString = htmlString.Replace("  ", string.Empty);
+                htmlString = htmlString.Replace("  ", " ");
             }
             catch (Exception ex)
             {
@@ -276,6 +286,48 @@ namespace CrawlerData
             {
                 textBox2.Text = openFileDialog1.FileName;
             }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (textBox2.Text.Length == 0)
+                {
+                    MessageBox.Show("K duoc");
+                    return;
+                }
+                StreamWriter sw = new StreamWriter("Out_Yte_SKhoe.txt");
+                string[] lines = File.ReadAllLines(textBox2.Text);
+                foreach (string str in lines)
+                {
+
+                    string htmlTagPattern = "<(.*?)>";
+                    string data = Regex.Replace(str, htmlTagPattern, string.Empty);
+                    //string data = string.Empty;
+                    //Regex regexLink = new Regex(htmlTagPattern, RegexOptions.Singleline | RegexOptions.IgnoreCase);
+                    //MatchCollection matches = regexLink.Matches(str);
+                    //if (matches.Count > 0)
+                    //{
+                    //    foreach (Match match in matches)
+                    //    {
+                    //        if (match.Success)
+                    //        {
+                    //            data = str.Replace(match.Value.ToString(), string.Empty);
+                    //        }
+                    //    }
+                    //}
+                    sw.WriteLine(data);
+
+                }
+                sw.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("button3_Click: " + ex.ToString());
+                return;
+            }
+
         }
     } 
 }

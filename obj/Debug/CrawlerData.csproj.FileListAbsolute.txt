@@ -28,3 +28,13 @@ G:\Study\GitHub\CrawlerData\CrawlerData\obj\Debug\CrawlerData.csproj.GenerateRes
 G:\Study\GitHub\CrawlerData\CrawlerData\obj\Debug\CrawlerData.csproj.CoreCompileInputs.cache
 G:\Study\GitHub\CrawlerData\CrawlerData\obj\Debug\CrawlerData.exe
 G:\Study\GitHub\CrawlerData\CrawlerData\obj\Debug\CrawlerData.pdb
+G:\DuongHB\5.Project\GitHub\DecodeJson\CrawlerData\bin\Debug\CrawlerData.exe.config
+G:\DuongHB\5.Project\GitHub\DecodeJson\CrawlerData\bin\Debug\CrawlerData.exe
+G:\DuongHB\5.Project\GitHub\DecodeJson\CrawlerData\bin\Debug\CrawlerData.pdb
+G:\DuongHB\5.Project\GitHub\DecodeJson\CrawlerData\obj\Debug\CrawlerData.csprojAssemblyReference.cache
+G:\DuongHB\5.Project\GitHub\DecodeJson\CrawlerData\obj\Debug\CrawlerData.Form1.resources
+G:\DuongHB\5.Project\GitHub\DecodeJson\CrawlerData\obj\Debug\CrawlerData.Properties.Resources.resources
+G:\DuongHB\5.Project\GitHub\DecodeJson\CrawlerData\obj\Debug\CrawlerData.csproj.GenerateResource.cache
+G:\DuongHB\5.Project\GitHub\DecodeJson\CrawlerData\obj\Debug\CrawlerData.csproj.CoreCompileInputs.cache
+G:\DuongHB\5.Project\GitHub\DecodeJson\CrawlerData\obj\Debug\CrawlerData.exe
+G:\DuongHB\5.Project\GitHub\DecodeJson\CrawlerData\obj\Debug\CrawlerData.pdb
